@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoVocab Adventure Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-selected {
+            background-color: #10B981; /* Emerald-500 */
+            color: white;
+            border-color: #10B981;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="app" class="w-full max-w-4xl mx-auto">
+
+        <!-- Initial Setup Screen -->
+        <div id="setup-screen" class="bg-white p-8 rounded-2xl shadow-lg text-center">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">🌍 Welcome to the GeoVocab Adventure!</h1>
+            <p class="text-lg text-gray-600 mb-8">Let's get ready to explore the world of geography. First, build your adventure!</p>
+
+            <!-- Step 1: Choose Persona -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4">🧠 1. Choose your guide!</h2>
+                <div id="persona-choices" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button data-persona="teacher" class="persona-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                        <span class="text-4xl mb-2 block">👩‍🏫</span> Friendly Teacher
+                    </button>
+                    <button data-persona="explorer" class="persona-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                        <span class="text-4xl mb-2 block">🧭</span> Silly Explorer
+                    </button>
+                    <button data-persona="host" class="persona-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                        <span class="text-4xl mb-2 block">🎤</span> Quiz Show Host
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Choose Activity -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4">📚 2. What would you like to do?</h2>
+                <div id="activity-choices" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button data-activity="quiz" class="activity-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                        <span class="text-2xl mb-2 block">📝</span> Quiz Me!
+                    </button>
+                    <button data-activity="teach" class="activity-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                        <span class="text-2xl mb-2 block">🧑‍🏫</span> Teach Me!
+                    </button>
+                    <button data-activity="play" class="activity-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                        <span class="text-2xl mb-2 block">🎮</span> Let's Play!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Choose Time -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4">⏱️ 3. How long do you want to study?</h2>
+                <div id="time-choices" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button data-time="5" class="time-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                       <span class="text-2xl mb-2 block">⚡</span> Quick Boost (5 min)
+                    </button>
+                    <button data-time="15" class="time-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                        <span class="text-2xl mb-2 block">💪</span> Power-Up (15 min)
+                    </button>
+                    <button data-time="30" class="time-btn p-6 border-2 border-gray-200 rounded-xl card text-lg">
+                        <span class="text-2xl mb-2 block">🏆</span> Geo Master (30 min)
+                    </button>
+                </div>
+            </div>
+
+            <button id="start-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition duration-300 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+                Start Adventure!
+            </button>
+        </div>
+
+        <!-- Study Session Screen -->
+        <div id="session-screen" class="hidden bg-white p-8 rounded-2xl shadow-lg">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 id="session-title" class="text-3xl font-bold"></h2>
+                    <p id="session-subtitle" class="text-gray-600"></p>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg font-semibold">Time Remaining:</p>
+                    <p id="timer" class="text-2xl font-bold text-blue-600">00:00</p>
+                </div>
+            </div>
+
+            <div id="activity-area" class="min-h-[400px] flex flex-col items-center justify-center p-6 bg-gray-50 rounded-xl">
+                <!-- Content will be injected here by JavaScript -->
+            </div>
+
+            <div class="mt-6 flex justify-between items-center">
+                 <div id="progress-container" class="w-full bg-gray-200 rounded-full h-4 mr-4">
+                    <div id="progress-bar" class="bg-green-500 h-4 rounded-full" style="width: 0%"></div>
+                </div>
+                <button id="end-session-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+                    End Session
+                </button>
+            </div>
+        </div>
+
+        <!-- End Session Modal -->
+        <div id="end-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md">
+                <h2 id="modal-title" class="text-3xl font-bold mb-4">Session Over!</h2>
+                <p id="modal-message" class="text-lg mb-6">Great work! You're a geography star!</p>
+                <div class="flex justify-center gap-4">
+                    <button id="play-again-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const geoTerms = [
+            { term: "Canal", definition: "A man-made waterway built to connect two bodies of water or to allow ships to travel inland.", example: "The Panama Canal connects the Atlantic and Pacific Oceans." },
+            { term: "Isthmus", definition: "A narrow strip of land that connects two larger land areas, with water on both sides.", example: "The Isthmus of Panama links North and South America." },
+            { term: "Peninsula", definition: "A piece of land almost surrounded by water but still attached to a larger landmass.", example: "Florida is a peninsula." },
+            { term: "Piedmont", definition: "Land at the base of a mountain range, usually sloping and hilly, formed by sediments washing down from mountains." },
+            { term: "Plateau", definition: "A large, flat area of land that rises high above the surrounding land, often formed by uplift or lava flows." },
+            { term: "Mesa", definition: "A flat-topped hill or small plateau with steep sides, common in deserts of the American Southwest." },
+            { term: "Butte", definition: "A smaller, isolated hill with steep sides and a flat top — like a “mini-mesa.”" },
+            { term: "Dunes", definition: "Hills of sand shaped by wind, often found along beaches or in deserts; they can shift and move over time." },
+            { term: "Sandhills", definition: "Rolling, sandy hills formed by ancient windblown deposits, often covered with grasses." },
+            { term: "Cliff", definition: "A steep, high face of rock or earth formed by erosion or tectonic activity." },
+            { term: "Basin", definition: "A low area of land, often shaped like a bowl, where water or sediments collect.", example: "Examples include river basins." },
+            { term: "Canyon", definition: "A deep valley with steep sides, usually carved by a river over long periods of time." },
+            { term: "Fjord", definition: "A long, narrow sea inlet between steep cliffs, carved by glaciers and later filled by seawater." },
+            { term: "Valley", definition: "A low area between hills or mountains, often with a river running through it. Formed by erosion or glaciers." },
+            { term: "Trench", definition: "A very deep cut in the ocean floor, often marking where tectonic plates meet.", example: "the Mariana Trench." },
+            { term: "Continental Divide", definition: "A ridge of mountains or high ground that separates river systems flowing toward different oceans.", example: "In North America, it runs along the Rocky Mountains." },
+            { term: "Savanna", definition: "Tropical grassland with scattered trees, found in hot regions.", example: "African savannas support elephants, lions, and giraffes." },
+            { term: "Plains", definition: "Large, flat or gently rolling areas with few trees, often fertile for farming." },
+            { term: "Grasslands", definition: "Areas dominated by grasses, found in both warm and cool climates; they include prairies and steppes." },
+            { term: "Vegetation", definition: "All the plant life in a particular place, from grasses to forests; shaped by climate, soil, and water." },
+            { term: "Montane", definition: "Relating to mountain regions, especially the unique ecosystems on their slopes, such as alpine meadows." },
+            { term: "Lagoon", definition: "A shallow body of water separated from a larger sea or ocean by sandbars, reefs, or coral." },
+            { term: "Atoll", definition: "A ring-shaped coral island surrounding a central lagoon, usually built on submerged volcanic rock." },
+            { term: "Archipelago", definition: "A group or chain of islands clustered together.", example: "The Philippines." },
+            { term: "Island", definition: "Land completely surrounded by water, ranging in size from tiny islets to large landmasses like Greenland." },
+            { term: "Pond", definition: "A small body of still water, usually smaller than a lake, often shallow enough for sunlight to reach the bottom across most of it." },
+            { term: "Lake", definition: "A large body of inland water surrounded by land, deeper and larger than a pond.", example: "Lake Michigan, Lake Victoria." },
+            { term: "Sea", definition: "A smaller division of an ocean, partly enclosed by land.", example: "the Mediterranean Sea." },
+            { term: "Ocean", definition: "The largest body of salt water covering most of Earth’s surface.", example: "There are five: Atlantic, Pacific, Indian, Southern, and Arctic." },
+            { term: "Gulf", definition: "A large area of sea or ocean partly enclosed by land, usually bigger and deeper than a bay.", example: "Gulf of Mexico." },
+            { term: "Bay", definition: "A body of water partly surrounded by land and usually smaller than a gulf, often with a wide opening to the sea.", example: "San Francisco Bay." },
+            { term: "Harbor", definition: "A sheltered body of water along the coast where ships can anchor safely, sometimes naturally protected, sometimes improved by humans.", example: "New York Harbor." },
+            { term: "River", definition: "A large, flowing body of water that moves from higher ground toward oceans, seas, or lakes." },
+            { term: "Tributary", definition: "A smaller stream or river that flows into a larger one, adding to its water supply." },
+            { term: "Estuary", definition: "The wide mouth of a river where it meets the sea, mixing fresh and salt water and supporting rich ecosystems." },
+            { term: "Delta", definition: "A fan-shaped landform at the mouth of a river, built up from sediments carried downstream." },
+            { term: "Desert", definition: "A very dry region with little rainfall, often with sand or rock landscapes and extreme temperatures." },
+            { term: "Oasis", definition: "A fertile spot in a desert where water is available from springs or underground, allowing life to thrive." },
+            { term: "Swamp", definition: "A wetland area with standing water and abundant plant life, especially trees. Swamps support diverse ecosystems and act as natural water filters." },
+            { term: "Boreal Forest/Taiga", definition: "Cold forests of evergreen trees, found in northern regions just below the Arctic. Long winters, short summers." },
+            { term: "Tropical Forest", definition: "Hot, wet forests near the equator with very high biodiversity and dense canopy layers." },
+            { term: "Temperate Forest", definition: "Forests with four seasons and a mix of deciduous (leaf-dropping) and evergreen trees." },
+            { term: "Deciduous", definition: "Trees that lose their leaves seasonally, usually in autumn, and regrow them in spring.", example: "oaks, maples, birches." },
+            { term: "Coniferous", definition: "Trees that produce cones and have needle-like leaves, usually evergreen (stay green all year).", example: "pines, spruces, firs." },
+            { term: "Tundra", definition: "Cold, treeless land where the soil is frozen most of the year (permafrost). Only mosses, lichens, and small plants survive." },
+            { term: "Arctic", definition: "The icy polar region around the North Pole, with extreme cold, long winters, and sea ice." },
+            { term: "Subarctic", definition: "Just south of the Arctic; cold boreal forests with long winters, but more vegetation than the Arctic." },
+            { term: "Tropical", definition: "Hot and wet year-round, with little temperature change." },
+            { term: "Dry", definition: "Very little rainfall (includes deserts and semi-arid regions)." },
+            { term: "Temperate", definition: "Mild with distinct seasons, often influenced by oceans." },
+            { term: "Continental", definition: "Wide temperature ranges, with hot summers and cold winters, found inland far from oceans." },
+            { term: "Polar", definition: "Extremely cold, with ice and snow most of the year. Very short summers." },
+        ];
+
+        const appState = {
+            persona: null,
+            activity: null,
+            time: null,
+            timerInterval: null,
+            timeLeft: 0,
+            shuffledTerms: [],
+            currentTermIndex: 0,
+            score: 0,
+            totalQuestions: 0,
+        };
+
+        const personas = {
+            teacher: {
+                name: "Friendly Teacher 👩‍🏫",
+                greeting: "Hello! I'm here to help you learn.",
+                encouragement: ["Excellent!", "Great job!", "You're doing wonderfully!", "Keep up the fantastic work!"],
+                correction: "Not quite, but close! Let's review this one.",
+            },
+            explorer: {
+                name: "Silly Explorer 🧭",
+                greeting: "G'day, mate! Ready for a wild adventure in geography?",
+                encouragement: ["Crikey, you got it!", "Brilliant discovery!", "You're a true adventurer!"],
+                correction: "Whoops, a wrong turn! Let's get back on the trail.",
+            },
+            host: {
+                name: "Quiz Show Host 🎤",
+                greeting: "Welcome to... GEO-PARDY! Let's play for the grand prize!",
+                encouragement: ["That's the right answer! The crowd goes wild!", "Correct! Points on the board!", "Incredible! You're on a hot streak!"],
+                correction: "Ooh, tough break! The correct answer was...",
+            }
+        };
+
+        // UI Elements
+        const setupScreen = document.getElementById('setup-screen');
+        const sessionScreen = document.getElementById('session-screen');
+        const startBtn = document.getElementById('start-btn');
+        const activityArea = document.getElementById('activity-area');
+        const endModal = document.getElementById('end-modal');
+
+        // Event Listeners for Setup
+        document.getElementById('persona-choices').addEventListener('click', (e) => handleSelection(e, 'persona-btn', 'persona'));
+        document.getElementById('activity-choices').addEventListener('click', (e) => handleSelection(e, 'activity-btn', 'activity'));
+        document.getElementById('time-choices').addEventListener('click', (e) => handleSelection(e, 'time-btn', 'time'));
+
+        startBtn.addEventListener('click', startSession);
+        document.getElementById('end-session-btn').addEventListener('click', () => endSession(false));
+        document.getElementById('play-again-btn').addEventListener('click', resetApp);
+
+        function handleSelection(event, btnClass, stateKey) {
+            const button = event.target.closest(`.${btnClass}`);
+            if (!button) return;
+
+            // Remove selected class from all buttons in the group
+            document.querySelectorAll(`.${btnClass}`).forEach(btn => btn.classList.remove('btn-selected'));
+            // Add selected class to the clicked button
+            button.classList.add('btn-selected');
+
+            appState[stateKey] = button.dataset[stateKey];
+            checkAllSelections();
+        }
+        
+        function checkAllSelections() {
+            startBtn.disabled = !(appState.persona && appState.activity && appState.time);
+        }
+
+        function startSession() {
+            setupScreen.classList.add('hidden');
+            sessionScreen.classList.remove('hidden');
+
+            const persona = personas[appState.persona];
+            document.getElementById('session-title').textContent = persona.name;
+            document.getElementById('session-subtitle').textContent = persona.greeting;
+            
+            appState.shuffledTerms = [...geoTerms].sort(() => Math.random() - 0.5);
+            appState.currentTermIndex = 0;
+            appState.score = 0;
+            appState.totalQuestions = 0;
+            
+            updateProgressBar();
+            startTimer();
+            loadActivity();
+        }
+
+        function startTimer() {
+            appState.timeLeft = appState.time * 60;
+            updateTimerDisplay();
+            appState.timerInterval = setInterval(() => {
+                appState.timeLeft--;
+                updateTimerDisplay();
+                if (appState.timeLeft <= 0) {
+                    endSession(true);
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(appState.timeLeft / 60);
+            const seconds = appState.timeLeft % 60;
+            document.getElementById('timer').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function loadActivity() {
+            if (appState.currentTermIndex >= appState.shuffledTerms.length) {
+                appState.currentTermIndex = 0; // Loop back
+            }
+
+            switch (appState.activity) {
+                case 'quiz':
+                    loadQuiz();
+                    break;
+                case 'teach':
+                    loadTeach();
+                    break;
+                case 'play':
+                    loadPlay();
+                    break;
+            }
+        }
+        
+        function getNextTerm() {
+             const term = appState.shuffledTerms[appState.currentTermIndex];
+             appState.currentTermIndex++;
+             return term;
+        }
+
+        function updateProgressBar() {
+            const progress = (appState.currentTermIndex / appState.shuffledTerms.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        // --- ACTIVITY: TEACH ME ---
+        function loadTeach() {
+            const term = getNextTerm();
+            activityArea.innerHTML = `
+                <div class="text-center w-full">
+                    <h3 class="text-5xl font-bold text-blue-600 mb-4">${term.term}</h3>
+                    <p class="text-xl text-gray-700 mb-4">${term.definition}</p>
+                    ${term.example ? `<p class="text-lg text-gray-500 italic">Example: ${term.example}</p>` : ''}
+                    <button id="next-teach-btn" class="mt-8 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg text-lg">Next Term</button>
+                </div>
+            `;
+            document.getElementById('next-teach-btn').onclick = () => {
+                updateProgressBar();
+                loadTeach();
+            };
+        }
+        
+        // --- ACTIVITY: QUIZ ME (Multiple Choice) ---
+        function loadQuiz() {
+            const correctTerm = getNextTerm();
+            appState.totalQuestions++;
+            
+            let options = [correctTerm];
+            while (options.length < 4) {
+                const randomTerm = geoTerms[Math.floor(Math.random() * geoTerms.length)];
+                if (!options.some(opt => opt.term === randomTerm.term)) {
+                    options.push(randomTerm);
+                }
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            activityArea.innerHTML = `
+                <div class="text-center w-full">
+                    <p class="text-2xl text-gray-700 mb-6">Which term means:</p>
+                    <h3 class="text-3xl font-semibold mb-8">${correctTerm.definition}</h3>
+                    <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${options.map(opt => `<button data-term="${opt.term}" class="quiz-option p-4 border-2 rounded-lg text-xl">${opt.term}</button>`).join('')}
+                    </div>
+                    <div id="quiz-feedback" class="mt-6 text-2xl font-semibold h-8"></div>
+                </div>
+            `;
+
+            document.getElementById('quiz-options').onclick = (e) => {
+                const selectedBtn = e.target.closest('.quiz-option');
+                if (!selectedBtn) return;
+                
+                document.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
+                
+                const isCorrect = selectedBtn.dataset.term === correctTerm.term;
+                const persona = personas[appState.persona];
+                const feedbackEl = document.getElementById('quiz-feedback');
+                
+                if (isCorrect) {
+                    appState.score++;
+                    selectedBtn.classList.add('bg-green-500', 'text-white', 'border-green-500');
+                    feedbackEl.textContent = persona.encouragement[Math.floor(Math.random() * persona.encouragement.length)];
+                    feedbackEl.classList.add('text-green-600');
+                } else {
+                    selectedBtn.classList.add('bg-red-500', 'text-white', 'border-red-500');
+                    document.querySelector(`[data-term="${correctTerm.term}"]`).classList.add('bg-green-500', 'text-white', 'border-green-500');
+                    feedbackEl.textContent = persona.correction;
+                    feedbackEl.classList.add('text-red-600');
+                }
+                
+                setTimeout(() => {
+                    updateProgressBar();
+                    loadQuiz();
+                }, 2000);
+            };
+        }
+
+        // --- ACTIVITY: LET'S PLAY (Matching Game) ---
+        function loadPlay() {
+             const gameTerms = appState.shuffledTerms.slice(appState.currentTermIndex, appState.currentTermIndex + 4);
+             if(gameTerms.length < 4){
+                 // reshuffle if not enough terms
+                 appState.shuffledTerms.sort(() => Math.random() - 0.5);
+                 appState.currentTermIndex = 0;
+                 return loadPlay();
+             }
+             appState.currentTermIndex += 4;
+             appState.totalQuestions += 4;
+
+             const terms = [...gameTerms].sort(() => Math.random() - 0.5);
+             const defs = [...gameTerms].sort(() => Math.random() - 0.5);
+
+             activityArea.innerHTML = `
+                <div class="text-center w-full">
+                     <h3 class="text-3xl font-semibold mb-4">Match the Term to its Definition!</h3>
+                     <div id="matching-game" class="flex flex-col md:flex-row justify-around gap-6">
+                        <div id="match-terms" class="flex flex-col gap-3 w-full">
+                            ${terms.map((t, i) => `<button data-term="${t.term}" class="match-item match-term p-4 border-2 rounded-lg text-xl">${t.term}</button>`).join('')}
+                        </div>
+                        <div id="match-defs" class="flex flex-col gap-3 w-full">
+                           ${defs.map((d, i) => `<button data-term="${d.term}" class="match-item match-def p-4 border-2 rounded-lg text-lg">${d.definition}</button>`).join('')}
+                        </div>
+                     </div>
+                     <div id="match-feedback" class="mt-4 text-xl font-semibold h-8"></div>
+                </div>
+             `;
+             
+             let selectedTerm = null;
+             let selectedDef = null;
+             let matchedCount = 0;
+
+             document.getElementById('matching-game').onclick = e => {
+                const target = e.target.closest('.match-item');
+                if (!target || target.disabled) return;
+
+                if (target.classList.contains('match-term')) {
+                    if (selectedTerm) selectedTerm.classList.remove('btn-selected');
+                    selectedTerm = target;
+                    selectedTerm.classList.add('btn-selected');
+                } else if (target.classList.contains('match-def')) {
+                    if (selectedDef) selectedDef.classList.remove('btn-selected');
+                    selectedDef = target;
+                    selectedDef.classList.add('btn-selected');
+                }
+
+                if (selectedTerm && selectedDef) {
+                    const persona = personas[appState.persona];
+                    const feedbackEl = document.getElementById('match-feedback');
+
+                    if (selectedTerm.dataset.term === selectedDef.dataset.term) { // Correct match
+                        appState.score++;
+                        selectedTerm.disabled = true;
+                        selectedDef.disabled = true;
+                        selectedTerm.classList.add('bg-green-200');
+                        selectedDef.classList.add('bg-green-200');
+                        selectedTerm = null;
+                        selectedDef = null;
+                        matchedCount++;
+                        feedbackEl.textContent = "It's a match!";
+                        feedbackEl.className = 'mt-4 text-xl font-semibold h-8 text-green-600';
+                    } else { // Incorrect match
+                        feedbackEl.textContent = "Not a match, try again!";
+                        feedbackEl.className = 'mt-4 text-xl font-semibold h-8 text-red-600';
+                        setTimeout(() => {
+                            if (selectedTerm) selectedTerm.classList.remove('btn-selected');
+                            if (selectedDef) selectedDef.classList.remove('btn-selected');
+                            selectedTerm = null;
+                            selectedDef = null;
+                            feedbackEl.textContent = '';
+                        }, 1000);
+                    }
+
+                    if (matchedCount === 4) {
+                        feedbackEl.textContent = persona.encouragement[0];
+                        setTimeout(() => {
+                           updateProgressBar();
+                           loadPlay();
+                        }, 1500);
+                    }
+                }
+             };
+        }
+
+        // --- SESSION MANAGEMENT ---
+        function endSession(timedOut) {
+            clearInterval(appState.timerInterval);
+            const modalTitle = document.getElementById('modal-title');
+            const modalMessage = document.getElementById('modal-message');
+
+            modalTitle.textContent = timedOut ? "Time's Up!" : "Session Complete!";
+            
+            let finalMessage = "Great job exploring!";
+            if(appState.activity !== 'teach' && appState.totalQuestions > 0){
+                const accuracy = Math.round((appState.score / appState.totalQuestions) * 100);
+                finalMessage = `You answered ${appState.score} out of ${appState.totalQuestions} correctly. That's an accuracy of ${accuracy}%! Keep it up!`;
+            }
+            modalMessage.textContent = finalMessage;
+
+            endModal.classList.remove('hidden');
+        }
+
+        function resetApp() {
+            endModal.classList.add('hidden');
+            sessionScreen.classList.add('hidden');
+            setupScreen.classList.remove('hidden');
+
+            // Reset state
+            appState.persona = null;
+            appState.activity = null;
+            appState.time = null;
+
+            // Reset UI
+            document.querySelectorAll('.btn-selected').forEach(btn => btn.classList.remove('btn-selected'));
+            startBtn.disabled = true;
+            document.getElementById('progress-bar').style.width = '0%';
+        }
+        
+        checkAllSelections(); // Initial check
+    </script>
+</body>
+</html>
